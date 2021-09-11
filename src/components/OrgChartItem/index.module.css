@@ -1,0 +1,90 @@
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.card {
+  padding: 10px;
+  text-align: center;
+  background-color: #ff0;
+  border: 1px solid #000;
+}
+
+.children {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.children::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-left: 2px solid #000;
+  height: 20px;
+}
+
+.children .root:not(:only-child) {
+  margin-top: 20px;
+}
+
+.children .root::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  right: 50%;
+  border-top: 2px solid #f00;
+  /* .children の gap の半分を足す */
+  width: calc(50% + 10px);
+  height: 20px;
+}
+
+.children .root::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-top: 2px solid #00f;
+  /* .children の gap の半分を足す */
+  width: calc(50% + 10px);
+  height: 20px;
+}
+
+.children .root::after {
+  border-left: 2px solid #00f;
+}
+
+.children .root:first-child::before {
+  border-top: none;
+}
+
+.children .root:first-child::after {
+  border-radius: 5px 0 0 0;
+}
+
+.children .root:last-child::before {
+  border-right: 2px solid #f00;
+  border-radius: 0 5px 0 0;
+}
+
+.children .root:last-child::after {
+  content: "";
+  border-top: none;
+  border-left: none;
+}
+
+.children .root:only-child {
+  /* border の width 分 */
+  margin-top: 2px;
+}
+
+.children .root:only-child::before {
+  border-radius: 0;
+  /* border の width 分 */
+  transform: translateX(2px);
+}
