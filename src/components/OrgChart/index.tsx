@@ -11,9 +11,9 @@ export type Item = {
 };
 
 type Props = {
-  data: Item[];
+  source: Item[];
 };
-export const OrgChart: React.VFC<Props> = ({ data }) => {
+export const OrgChart: React.VFC<Props> = ({ source }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <ul className={styles.root}>
