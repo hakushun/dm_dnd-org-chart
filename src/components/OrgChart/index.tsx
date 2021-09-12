@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { OrgChartItem } from "../OrgChartItem";
@@ -14,6 +14,8 @@ type Props = {
   source: Item[];
 };
 export const OrgChart: React.VFC<Props> = ({ source }) => {
+  const [data, setData] = useState(source);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <ul className={styles.root}>
