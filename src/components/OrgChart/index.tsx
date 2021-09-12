@@ -1,4 +1,6 @@
 import React from "react";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 import { OrgChartItem } from "../OrgChartItem";
 import styles from "./index.module.css";
 
@@ -13,10 +15,12 @@ type Props = {
 };
 export const OrgChart: React.VFC<Props> = ({ data }) => {
   return (
-    <ul className={styles.root}>
-      {data.map((item) => (
-        <OrgChartItem key={item.id} {...item} />
-      ))}
-    </ul>
+    <DndProvider backend={HTML5Backend}>
+      <ul className={styles.root}>
+        {data.map((item) => (
+          <OrgChartItem key={item.id} {...item} />
+        ))}
+      </ul>
+    </DndProvider>
   );
 };
