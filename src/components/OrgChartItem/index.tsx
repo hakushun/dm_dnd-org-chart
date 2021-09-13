@@ -11,41 +11,46 @@ type Props = {
 export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
-  // dataの中に指定したidの要素があればそれをreturn/なければundefined
-  const getTargetItem = (items: Item[], targetId: string): Item | undefined => {
-    for (const item of items) {
-      if (item.id === targetId) return item;
-      if (item.children) {
-        const result = getTargetItem(item.children, targetId);
-        if (result) return result;
+  // targetIdが子孫にいるか確認する
+  const hasDescendants = (children: Item[], targetId: string) => {
+    if (children.some((child) => child.id === id)) return true;
+    for (const child of children) {
+      if (child.id === targetId) return true;
+      if (child.children) {
+        const result = hasDescendants(child.children, targetId);
+        if (result) return true;
       }
     }
-    return undefined;
+    return false;
   };
 
-  // itemに親となるitem(drop先)
-  // targetIdに子どもであるか確かめたいitemのid(drag元)
-  const isChild = (item: Item | undefined, targetId: string) => {
-    if (!item) return false;
-    return item.children.some((child) => child.id === targetId);
-  };
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "CARD",
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    item: () => ({ id }),
+    item: () => ({ id, name, children }),
   }));
 
-  const [{ canDrop }, drop] = useDrop(() => ({
+  const [_, drop] = useDrop(() => ({
     accept: "CARD",
-    collect: (monitor) => ({
-      // ここでisChild関数
-      canDrop: monitor.canDrop(),
-    }),
-    drop: (item, monitor: DropTargetMonitor) => {
-      if (item.id === id) return;
+    drop: (item: Item, monitor: DropTargetMonitor) => {
+      // 同じ要素へdnd
+      if (item.id === id) {
+        console.log("same");
+        return;
+      }
+      // 子から親へのdnd
+      if (children.some((child) => child.id === item.id)) {
+        console.log("already child");
+        return;
+      }
+      // 親から子孫へのdnd
+      if (hasDescendants(item.children, id)) {
+        console.log("descendants");
+        return;
+      }
       console.log("drag", item.id);
       console.log("drop", id);
     },
