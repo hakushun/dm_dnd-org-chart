@@ -1,26 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { OrgChartItem } from "../OrgChartItem";
+import { Item, useOrgTree } from "../../hooks/useOrgTree";
 import styles from "./index.module.css";
-
-export type Item = {
-  id: string;
-  name: string;
-  children: Item[];
-};
 
 type Props = {
   source: Item[];
 };
 export const OrgChart: React.VFC<Props> = ({ source }) => {
-  const [data, setData] = useState(source);
+  const { tree, handleChange } = useOrgTree(source);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <ul className={styles.root}>
-        {data.map((item) => (
-          <OrgChartItem key={item.id} {...item} />
+        {tree.map((item) => (
+          <OrgChartItem key={item.id} {...item} handleChange={handleChange} />
         ))}
       </ul>
     </DndProvider>

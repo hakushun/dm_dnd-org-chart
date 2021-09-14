@@ -1,14 +1,19 @@
 import React, { useRef } from "react";
 import { DropTargetMonitor, useDrag, useDrop } from "react-dnd";
-import { Item } from "../OrgChart";
+import { Item } from "../../hooks/useOrgTree";
 import styles from "./index.module.css";
+
+const ItemTypes = {
+  CHART_ITEM: "CHART_ITEM",
+} as const;
 
 type Props = {
   id: string;
   name: string;
   children: Item[];
+  handleChange: (dgarId: Item, dropId: string) => void;
 };
-export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
+export const OrgChartItem: React.VFC<Props> = ({ id, name, children, handleChange }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
   // targetIdが子孫にいるか確認する
@@ -24,9 +29,8 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
     return false;
   };
 
-
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: "CARD",
+    type: ItemTypes.CHART_ITEM,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -34,7 +38,7 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
   }));
 
   const [_, drop] = useDrop(() => ({
-    accept: "CARD",
+    accept: ItemTypes.CHART_ITEM,
     drop: (item: Item, monitor: DropTargetMonitor) => {
       // 同じ要素へdnd
       if (item.id === id) {
@@ -51,8 +55,7 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
         console.log("descendants");
         return;
       }
-      console.log("drag", item.id);
-      console.log("drop", id);
+      handleChange(item, id);
     },
   }));
   drag(drop(ref));
@@ -63,14 +66,15 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children }) => {
         ref={ref}
         id={id}
         className={styles.card}
-        style={{ opacity: isDragging ? 0.5 : 1, border: canDrop ? "3px solid red" : "none" }}
+        // TODO: canDropを定義しスタイルを出しわけたい
+        style={{ opacity: isDragging ? 0.5 : 1, border: false ? "3px solid red" : "none" }}
       >
         {name}
       </div>
       {children.length > 0 && (
         <ul className={styles.children}>
           {children.map((child) => (
-            <OrgChartItem key={child.id} {...child} />
+            <OrgChartItem key={child.id} {...child} handleChange={handleChange} />
           ))}
         </ul>
       )}
