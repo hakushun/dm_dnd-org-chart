@@ -12,22 +12,16 @@ type Props = {
   name: string;
   children: Item[];
   handleChange: (dgarId: Item, dropId: string) => void;
+  hasDescendants: (children: Item[], targetId: string) => boolean;
 };
-export const OrgChartItem: React.VFC<Props> = ({ id, name, children, handleChange }) => {
+export const OrgChartItem: React.VFC<Props> = ({
+  id,
+  name,
+  children,
+  handleChange,
+  hasDescendants,
+}) => {
   const ref = useRef<HTMLDivElement | null>(null);
-
-  // targetIdが子孫にいるか確認する
-  const hasDescendants = (children: Item[], targetId: string) => {
-    if (children.some((child) => child.id === id)) return true;
-    for (const child of children) {
-      if (child.id === targetId) return true;
-      if (child.children) {
-        const result = hasDescendants(child.children, targetId);
-        if (result) return true;
-      }
-    }
-    return false;
-  };
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHART_ITEM,
@@ -85,7 +79,12 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children, handleChang
       {children.length > 0 && (
         <ul className={styles.children}>
           {children.map((child) => (
-            <OrgChartItem key={child.id} {...child} handleChange={handleChange} />
+            <OrgChartItem
+              key={child.id}
+              {...child}
+              handleChange={handleChange}
+              hasDescendants={hasDescendants}
+            />
           ))}
         </ul>
       )}

@@ -6,8 +6,21 @@ export type Item = {
   children: Item[];
 };
 
-export const useOrgTree = (initialState?: Item[]) => {
-  const [tree, setTree] = useState<Item[]>(initialState || []);
+export const useOrgTree = (initialState: Item[] = []) => {
+  const [tree, setTree] = useState<Item[]>(initialState);
+
+  // targetIdが子孫にいるか確認する
+  const hasDescendants = (children: Item[], targetId: string) => {
+    if (children.some((child) => child.id === targetId)) return true;
+    for (const child of children) {
+      if (child.id === targetId) return true;
+      if (child.children) {
+        const result = hasDescendants(child.children, targetId);
+        if (result) return true;
+      }
+    }
+    return false;
+  };
 
   const deleteTargetItem = useCallback((items: Item[], dragItem: Item) => {
     for (const item of items) {
@@ -44,5 +57,5 @@ export const useOrgTree = (initialState?: Item[]) => {
     [addTargetItem, tree, deleteTargetItem]
   );
 
-  return { tree, handleChange };
+  return { tree, handleChange, hasDescendants };
 };
