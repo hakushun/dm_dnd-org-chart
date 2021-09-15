@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Item } from "../../hooks/useOrgTree";
@@ -68,11 +69,7 @@ export const OrgChartItem: React.VFC<Props> = ({
       <div
         ref={ref}
         id={id}
-        className={styles.card}
-        style={{
-          opacity: isDragging ? 0.5 : 1,
-          border: canDrop ? "3px solid red" : "none",
-        }}
+        className={clsx(styles.card, isDragging && styles.isDragging, canDrop && styles.canDrop)}
       >
         {name}
       </div>
