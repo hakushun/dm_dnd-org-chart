@@ -11,15 +11,15 @@ type Props = {
   id: string;
   name: string;
   children: Item[];
-  handleChange: (dgarId: Item, dropId: string) => void;
   hasDescendants: (children: Item[], targetId: string) => boolean;
+  handleDrop: (dgarId: Item, dropId: string) => void;
 };
 export const OrgChartItem: React.VFC<Props> = ({
   id,
   name,
   children,
-  handleChange,
   hasDescendants,
+  handleDrop,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -58,7 +58,7 @@ export const OrgChartItem: React.VFC<Props> = ({
         console.log("descendants");
         return;
       }
-      handleChange(item, id);
+      handleDrop(item, id);
     },
   }));
   drag(drop(ref));
@@ -82,8 +82,8 @@ export const OrgChartItem: React.VFC<Props> = ({
             <OrgChartItem
               key={child.id}
               {...child}
-              handleChange={handleChange}
               hasDescendants={hasDescendants}
+              handleDrop={handleDrop}
             />
           ))}
         </ul>

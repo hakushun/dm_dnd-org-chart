@@ -9,7 +9,7 @@ type Props = {
   source: Item[];
 };
 export const OrgChart: React.VFC<Props> = ({ source }) => {
-  const { tree, handleChange, hasDescendants } = useOrgTree(source);
+  const { tree, hasDescendants, handleDrop } = useOrgTree(source);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -18,8 +18,8 @@ export const OrgChart: React.VFC<Props> = ({ source }) => {
           <OrgChartItem
             key={item.id}
             {...item}
-            handleChange={handleChange}
             hasDescendants={hasDescendants}
+            handleDrop={handleDrop}
           />
         ))}
       </ul>
