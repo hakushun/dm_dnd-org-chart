@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { DropTargetMonitor, useDrag, useDrop } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
 import { Item } from "../../hooks/useOrgTree";
 import styles from "./index.module.css";
 
@@ -37,9 +37,18 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children, handleChang
     item: () => ({ id, name, children }),
   }));
 
-  const [_, drop] = useDrop(() => ({
+  const [{ canDrop }, drop] = useDrop(() => ({
     accept: ItemTypes.CHART_ITEM,
-    drop: (item: Item, monitor: DropTargetMonitor) => {
+    collect: (monitor) => ({
+      canDrop: monitor.canDrop(),
+    }),
+    // item: drag対象. id: drop 対象のid.
+    canDrop: (item: Item) =>
+      // TODO: 想定通りの挙動だが動かないことがある(処理が重すぎる？)
+      item.id !== id &&
+      !children.some((child) => child.id === item.id) &&
+      !hasDescendants(item.children, id),
+    drop: (item: Item) => {
       // 同じ要素へdnd
       if (item.id === id) {
         console.log("same");
@@ -66,8 +75,10 @@ export const OrgChartItem: React.VFC<Props> = ({ id, name, children, handleChang
         ref={ref}
         id={id}
         className={styles.card}
-        // TODO: canDropを定義しスタイルを出しわけたい
-        style={{ opacity: isDragging ? 0.5 : 1, border: false ? "3px solid red" : "none" }}
+        style={{
+          opacity: isDragging ? 0.5 : 1,
+          border: canDrop ? "3px solid red" : "none",
+        }}
       >
         {name}
       </div>
